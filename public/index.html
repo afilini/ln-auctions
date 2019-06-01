@@ -1,30 +1,79 @@
 <html>
     <head>
         <style type="text/css">
-            body {
+            body, table {
                 font-family: monospace;
+                font-size: 1.3em;
             }
 
-            h1, h2, h3, pre {
+            h1 {
+                font-size: 3em;
+            }
+
+            h1, h2, h3, code, p {
                 text-align: center;
             }
 
-            #qrcode > img {
-                margin: auto;
+            code {
+                display: block;
+                word-break: break-all;
+                overflow-wrap: break-word;
+            }
+
+            td:nth-child(2) {
+                padding-left: 1em;
+                text-align: right;
             }
         </style>
     </head>
     <body>
         <h1>LN Auction</h1>
 
-        <div id="qrcode" style="margin: auto;"></div>
-        <pre id="invoice"></pre>
+        <p style="margin: 20px auto;">Your invoice:</p>
 
-        <h1 id="amount"></h1>
+        <div id="qrcode" style="margin-left: calc(50% - 128px);"></div>
+        <code id="invoice" style="margin: 20px auto; width: 350px;"></code>
 
-        <h2 id="timer"></h2>
+        <table style="margin: auto;">
+            <tr style="font-size: 2em; font-weight: bold;">
+                <td>Highest Bid:</td>
+                <td id="amount"></td>
+                <td>SAT</td>
+            </tr>
+            <tr>
+                <td>Minimum Next Bid:</td>
+                <td id="next_amount"></td>
+                <td>SAT</td>
+            </tr>
+            <tr style="font-weight: bold;">
+                <td>Time Left: </td>
+                <td id="timer"> 00:00:00</td>
+            </tr>
+        </table>
+
+        <h1 id="our_id" style="display: none;"></h1>
 
         <h3 id="message"></h3>
+
+	<div style="width: 60%; margin: auto; text-align: left;">
+		<h2>Rules</h2>
+		<p>The minimum bid is 1000 (1k) SAT and every subsequent bid is required to be at least 1k SAT higher than the previous one</p>
+		<p>There's a 45 seconds timer that is reset every time a new bid is accepted. When the timer reaches zero, the auction is completed</p>
+		<p>All the money raised will be donated to The Tor Project</p>
+
+		<h2>Instructions </h2>
+		<p>The one shown above is your personal invoice. You can reuse it to bid multiple times until the end of the auction. To bid try to pay the invoice before the timer runs out.</p>
+		<p>When the current highest bid is yours, the amount field is shown in green and your wallet will show the payment as "pending", this is completely normal. If an higher bid comes in, your payment
+		will fail and you can try again with an higher amount.</p>
+		<p>Everybody can participate and the participants are anonymous, but if you want to get your t-shirt I will need to know who you are (if you are at the Hackday) or your address to ship it to you.
+		When the auction ends if you are the winner you can come up to me to show (or DM me on twitter at <a href="https://twitter.com/afilini">@afilini</a>) the payment preimage. Also, try to remember your "Win ID" 
+		that will be shown on screen, because I might need to use it in the (very unlikely) case that multiple people claim to have won.</p>
+
+		<h2>Tips</h2>
+		<p style="word-wrap: anywhere;">While it's not strictly required, having a direct channel with my node is really going to help with latency. The node is: 02a885bf6a0d3aaeaa62df1c942742264de87fadb903cb60d7c2b399d26eded857@auction.afilini.com:9735. <a href="https://twitter.com/afilini/status/1134762837849595904">Here</a> you can also see the node coordinates in a QR code</p>
+	</div>
+
+
     </body>
 
     <script type="text/javascript" src="qrcode.min.js"></script>

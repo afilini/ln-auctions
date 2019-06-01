@@ -16,6 +16,9 @@ module.exports = function (rpc, engine) {
                 action: 'STATE',
                 state: {
                     value: currentState
+                },
+                config: {
+                    min_bump: engine.getMinBump()
                 }
             };
 
@@ -37,6 +40,8 @@ module.exports = function (rpc, engine) {
 
         // Send the current state
         send(getStateObj());
+
+        engine.on('start_delayed', () => send(getStateObj()));
 
         ws.on('message', function(msg) {
             try {
@@ -71,6 +76,7 @@ module.exports = function (rpc, engine) {
             
             if (offer.id == id) {
                 cleanOffer.isOur = true;
+                cleanOffer.ourId = id;
             }
 
             return cleanOffer;

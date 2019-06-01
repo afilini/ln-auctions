@@ -1,12 +1,16 @@
 'use strict';
 
-const socket = new WebSocket("ws://localhost:3000/");
+const socket = new WebSocket("wss://auction.afilini.com/");
 
 const amount = document.getElementById('amount');
+const next_amount = document.getElementById('next_amount');
 const message = document.getElementById('message');
+const our_id = document.getElementById('our_id');
 const timerText = document.getElementById('timer');
 const qrcode = document.getElementById('qrcode');
 const invoice = document.getElementById('invoice');
+
+let MIN_BUMP = 1;
 
 Number.prototype.pad = function(size) {
     var s = String(this);
@@ -22,7 +26,7 @@ let timer = {
 
 function countdownInterval() {
     if (timer.to < (new Date())) {
-        timerText.innerText = '';
+        timerText.innerText = '00:00:00';
 
         clearInterval(timer.interval);
 
@@ -55,7 +59,7 @@ socket.onopen = function () {
 }
 
 function onInvoice(data) {
-    new QRCode(qrcode, data.invoice);
+    new QRCode(qrcode, 'lightning:' + data.invoice);
     invoice.innerText = data.invoice;
 }
 
@@ -71,6 +75,7 @@ function setMessage(state) {
 
 function onState(data) {
     setMessage(data.state.value);
+    MIN_BUMP = data.config.min_bump;
 
     if (data.state.value == 'WAITING') {
         startCountdown(data.state.timeout, () => setMessage('RUNNING'));
@@ -82,8 +87,12 @@ function onState(data) {
 }
 
 function onNewOffer(offer) {
-    amount.innerText = offer.amount + ' mSAT';
+    amount.innerText = Math.round(offer.amount / 1000);
     amount.style.color = offer.isOur ? 'green' : 'black';
+
+    next_amount.innerText = offer.isOur ? '' : Math.round((offer.amount + MIN_BUMP) / 1000);
+
+    startCountdown(offer.timeout);
 }
 
 socket.onmessage = function (msg) {
@@ -102,6 +111,12 @@ socket.onmessage = function (msg) {
             break;
         case 'WIN':
             setMessage('DONE');
+
+            if (data.offer.isOur) {
+                our_id.style.display = '';
+                our_id.innerText = 'Win ID: ' + data.offer.ourId;
+            }
+
             onNewOffer(data.offer);
             break;
 

@@ -4,8 +4,8 @@ const {EventEmitter} = require('events');
 const debug = require('debug')('ln-auctions:engine');
 const assert = require('assert');
 
-const MIN_BUMP = 100;
-const OFFER_COOLDOWN_TIME = 30 * 1000;
+const MIN_BUMP = 1000000;
+const OFFER_COOLDOWN_TIME = 45 * 1000;
 
 class AuctionsEngine extends EventEmitter {
     constructor(_startTime) {
@@ -13,6 +13,7 @@ class AuctionsEngine extends EventEmitter {
 
         const _self = this;
 
+        this.startTimeout = null;
         this.startTime = _startTime;
         this.state = 'WAITING'; // WAITING, RUNNING, DONE
 
@@ -22,9 +23,25 @@ class AuctionsEngine extends EventEmitter {
             timeout: null
         };
 
+        this.delayBegin();
+}
+
+    delayBegin() {
+        const _self = this;
+        clearTimeout(_self.startTimeout);
+
+        debug('Delayed begin to', _self.startTime);
+
         // Delay begin
         const now = new Date();
-        setTimeout(() => _self.begin(), Math.max(0, _self.startTime - now));
+        _self.startTimeout = setTimeout(() => _self.begin(), Math.max(0, _self.startTime - now));
+    }
+
+    delay(minutes) {
+        this.startTime = new Date(this.startTime.getTime() + minutes * 1000 * 60);
+        this.delayBegin();
+
+        this.emit('start_delayed', {});
     }
 
     begin() {
@@ -90,6 +107,10 @@ class AuctionsEngine extends EventEmitter {
 
     getHighest() {
         return this.highest;
+    }
+
+    getMinBump() {
+        return MIN_BUMP;
     }
 }
 
