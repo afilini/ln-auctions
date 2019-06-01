@@ -1,0 +1,21 @@
+{
+  "name": "ln-auctions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alekos Filini - @afilini",
+  "license": "MIT",
+  "dependencies": {
+    "debug": "^4.1.1",
+    "express": "^4.17.0",
+    "express-ws": "^4.0.0",
+    "jsonparse": "^1.3.1",
+    "lightning-client": "^0.5.2-beta.8",
+    "lodash": "^4.17.11",
+    "pug": "^2.0.3",
+    "uuid": "^3.3.2"
+  }
+}
